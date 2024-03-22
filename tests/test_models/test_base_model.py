@@ -17,19 +17,6 @@ from datetime import datetime
 
 
 class TestBaseModel(unittest.TestCase):
-    # def setUp(self):
-    #     # Set up any test fixtures here
-    #      self.kwargs = {
-    #         "id": "test_id",
-    #         "name": "Test",
-    #         "value": 10,
-    #         "created_at": "2024-03-22 12:00:00",
-    #         "updated_at": "2024-03-22 13:00:00"
-    #     }
-
-    # def tearDown(self):
-    #     # Clean up any test fixtures here
-    #     self.kwargs = None
 
     def test_init(self):
         kwargs = {

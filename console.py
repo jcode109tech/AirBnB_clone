@@ -21,6 +21,7 @@ class HBNBCommand(cmd.Cmd):
     # names = ["BaseModel", "User", "State",
     #           "City", "Amenity","Place", "Review"]
 
+
     def do_quit(self, arg):
         """ <Quits/Exits> programm """
         return True
@@ -30,9 +31,6 @@ class HBNBCommand(cmd.Cmd):
         print("Exiting...")
         return True
 
-    # def do_help(self, arg: str) -> bool | None:
-    #     """ Help documentation : always updataed """
-    #     return super().do_help(arg)
     def help_quit(self):
         """Help message for : quit command."""
         print("Quit command to exit the program\n")
@@ -157,10 +155,6 @@ class HBNBCommand(cmd.Cmd):
         print("** updated **")
 
 
-    def default(self, line):
-        print("** Command not recognized **")
-
-
     def do_all(self, line):
         """
         Prints all string representation of all instances based or not on the class name.
@@ -169,46 +163,83 @@ class HBNBCommand(cmd.Cmd):
         """
         args = line.split()
         if len(args) == 0:
-            print("** class name missing **")
-            # print(storage.all())
+            print(storage.all())
             return
         class_name = args[0]
         if class_name not in globals():
             print("** class doesn't exist **")
-            return   
-        # instances = storage.all()
-        # instances = globals()[class_name].all()
-        cls = globals()[class_name]
-        if not hasattr(cls, 'all'):
-            print(f"** {class_name} doesn't have 'all' method **")
             return
-        instances = cls.all()
+        instances = storage.all()
         class_instances = [str(instance) for key, instance in instances.items() if class_name in key]
-        # print(class_instances)
-        if not class_instances:
-            print("No instances found for class:", class_name)
+        print(class_instances)
+
+
+    def default(self, line):
+        """
+        Handle command interpreter
+        """
+       
+        commands = {'all': self.do_all,
+                    # "count": self.my_count,
+                    'show': self.do_show,
+                    'destroy': self.do_destroy,
+                    'update': self.do_update}
+        
+        args = line.split(".")
+        print(args[0], args[1])
+        if len(args) != 2:
+            print("** Incorrect command format. Use 'User.command()' format. **")
             return
-        for instance in class_instances:
-            print(instance)
 
-    # def command_interpreter():
-    #     """
-    #         Handle command interpreter
-    #     """
+        class_name, command = args[0], args[1].strip("(")
+        print(class_name)
+        print("command", command)
+        cmd_command = command.strip('()')
+        print("cmd_command  : ", cmd_command[0])
+        print("cmd_command2  : ", cmd_command[1])
+        bracket = command[1].split(')')[0]
+        print("bracket", bracket)
+        all_args = bracket.split(',')
+        print("all_args", all_args)
+        instance_id = command.strip('()')
+        print(instance_id)
 
-    #     while True:
-    #         user_input = input()
-    #         args = user_input.split('.')
-    #         if len(args) == 0:
-    #             continue
-    #         Users = args[0]
-    #         command = args[1]
-    #         if Users == "User":
-    #             if command not in HBNBCommand.commands:
-    #                 print("** Unknown command **")
-    #                 continue
-    #             HBNBCommand.commands[command](args[1:])
+        if class_name != "User":
+            print("** Command not recognized **")
+            return
 
+        if cmd_command  in commands.keys():
+            if cmd_command == "all" and bracket == "":
+                # Handle the case of "<class name>.all()"
+                return self.do_all(class_name)
+            elif cmd_command != "update":
+                return commands[
+                        cmd_command]("{} {}".format(
+                            class_name, bracket))
+            elif cmd_command == "update":
+                obj_id = all_args[0]
+                attribute_name = all_args[1]
+                attribute_value = all_args[2]
+                return commands[
+                        cmd_command]("{} {} {} {}".format(
+                            class_name, obj_id, attribute_name,
+                            attribute_value))
+            elif cmd_command == "show":
+                commands[command]("{} {}".format(class_name, instance_id))
+            else:
+                if not class_name:
+                    print("** class name missing **")
+                    return
+
+                try:
+                    call = commands[cmd_command]
+                    return call("{} {}".format(class_name, bracket))
+                except Exception:
+                    pass
+                 # commands[command]([])      
+        else:
+            print("*** Unknown syntax: {}".format(line))
+            return False
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
