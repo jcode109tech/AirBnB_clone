@@ -174,13 +174,33 @@ class HBNBCommand(cmd.Cmd):
         print(class_instances)
 
 
+    def do_count(self, line):
+        """
+        Counts the number of instances of a class.
+        Usage: <class name>.count()
+        """
+        args = line.split()
+        if len(args) == 0:
+            print("** class name missing **")
+            return
+
+        class_name = args[0]
+        if class_name not in globals():
+            print("** class doesn't exist **")
+            return
+
+        instances = storage.all()
+        class_instances = [instance for key, instance in instances.items() if class_name in key]
+        print(len(class_instances)) 
+
+
     def default(self, line):
         """
         Handle command interpreter
         """
        
         commands = {'all': self.do_all,
-                    # "count": self.my_count,
+                    "count": self.do_count,
                     'show': self.do_show,
                     'destroy': self.do_destroy,
                     'update': self.do_update}
@@ -195,12 +215,12 @@ class HBNBCommand(cmd.Cmd):
         print(class_name)
         print("command", command)
         cmd_command = command.strip('()')
-        print("cmd_command  : ", cmd_command[0])
-        print("cmd_command2  : ", cmd_command[1])
+        # print("cmd_command  : ", cmd_command[0])
+        # print("cmd_command2  : ", cmd_command[1])
         bracket = command[1].split(')')[0]
-        print("bracket", bracket)
+        # print("bracket", bracket)
         all_args = bracket.split(',')
-        print("all_args", all_args)
+        # print("all_args", all_args)
         instance_id = command.strip('()')
         print(instance_id)
 
@@ -226,6 +246,11 @@ class HBNBCommand(cmd.Cmd):
                             attribute_value))
             elif cmd_command == "show":
                 commands[command]("{} {}".format(class_name, instance_id))
+            elif cmd_command == "count":
+                instances = storage.all()
+                class_instances = [instance for key, instance in instances.items() if class_name in key]
+                print(len(class_instances))
+                return
             else:
                 if not class_name:
                     print("** class name missing **")
