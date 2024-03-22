@@ -11,56 +11,6 @@ from models.user import User
 
 
 #----------------------------------------------
-import sys
-import json
-from models.base_model import BaseModel
-from models.user import User  # Import the User class
-
-# Define command functions for all operations
-
-# Function to retrieve all instances of a class
-def all_instances(args):
-    """
-    Prints all string representation of all instances based on the class name.
-    Usage: all <class name>
-    """
-    if len(args) == 0:
-        print("** class name missing **")
-        return
-    class_name = args[0]
-    if class_name not in globals():
-        print("** class doesn't exist **")
-        return
-    instances = globals()[class_name].all()
-    if not instances:
-        print("No instances found for class:", class_name)
-        return
-    for instance in instances:
-        print(instance)
-
-# Define your class that inherits from cmd.Cmd
-
-# Define the commands dictionary
-commands = {
-    "all": all_instances,  # Use all_instances directly instead of do_all method
-    # Add other commands for create, show, destroy, update with BaseModel and User
-}
-
-# Function to handle the command interpreter
-def command_interpreter():
-    while True:
-        user_input = input("(hbnb) ")
-        args = user_input.split()
-        if len(args) == 0:
-            continue
-        command = args[0]
-        if command not in commands:
-            print("** Unknown command **")
-            continue
-        commands[command](args[1:])
-
-
-#----------------------------------------------
 class HBNBCommand(cmd.Cmd):
     """
       Runs cmd as shell
@@ -92,36 +42,6 @@ class HBNBCommand(cmd.Cmd):
         Eliminates empty lines
         """
         return False
-
-    def do_all(self, line):
-        """
-        Prints all string representation of all instances based or not on the class name.
-        Usage: all BaseModel or all.
-        Usage2: all<class name>
-        """
-        args = line.split()
-        if len(args) == 0:
-            print("** class name missing **")
-            # print(storage.all())
-            return
-        class_name = args[0]
-        if class_name not in globals():
-            print("** class doesn't exist **")
-            return   
-        # instances = storage.all()
-        # instances = globals()[class_name].all()
-        cls = globals()[class_name]
-        if not hasattr(cls, 'all'):
-            print(f"** {class_name} doesn't have 'all' method **")
-            return
-        instances = cls.all()
-        class_instances = [str(instance) for key, instance in instances.items() if class_name in key]
-        # print(class_instances)
-        if not class_instances:
-            print("No instances found for class:", class_name)
-            return
-        for instance in class_instances:
-            print(instance)
 
     def do_create(self, line):
         """
@@ -236,8 +156,40 @@ class HBNBCommand(cmd.Cmd):
         instances[key].save()
         print("** updated **")
 
+
     def default(self, line):
         print("** Command not recognized **")
+
+
+    def do_all(self, line):
+        """
+        Prints all string representation of all instances based or not on the class name.
+        Usage: all BaseModel or all.
+        Usage2: all<class name>
+        """
+        args = line.split()
+        if len(args) == 0:
+            print("** class name missing **")
+            # print(storage.all())
+            return
+        class_name = args[0]
+        if class_name not in globals():
+            print("** class doesn't exist **")
+            return   
+        # instances = storage.all()
+        # instances = globals()[class_name].all()
+        cls = globals()[class_name]
+        if not hasattr(cls, 'all'):
+            print(f"** {class_name} doesn't have 'all' method **")
+            return
+        instances = cls.all()
+        class_instances = [str(instance) for key, instance in instances.items() if class_name in key]
+        # print(class_instances)
+        if not class_instances:
+            print("No instances found for class:", class_name)
+            return
+        for instance in class_instances:
+            print(instance)
 
     # def command_interpreter():
     #     """
