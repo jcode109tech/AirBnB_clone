@@ -6,6 +6,11 @@ import cmd
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
@@ -19,24 +24,13 @@ class HBNBCommand(cmd.Cmd):
                    "City", "Amenity", "Place", "Review"]
 
     def do_quit(self, arg):
-        """ <Quits/Exits> programm """
+        "Quit command to exit the program"
         return True
 
-    def do_EOF():
-        """ End of file """
-        print("Exiting...")
+    def do_EOF(self, arg):
+        'End of file'
+        print()
         return True
-
-    def do_help(self, line):
-        print("Documented commands (type help <topic>):")
-        print("========================================")
-        print("EOF  help  quit")
-        return False
-
-    def do_help_quit(self, line):
-        """Help message for : quit command."""
-        print("Quit command to exit the program\n")
-        return False
 
     def handle_empty_line(self, line):
         """
@@ -58,7 +52,7 @@ class HBNBCommand(cmd.Cmd):
         if class_name not in HBNBCommand.State_names:
             print("** class doesn't exist **")
             return
-        new_instance = globals()[class_name]()
+        new_instance = eval(class_name)()
         new_instance.save()
         print(new_instance.id)
 
