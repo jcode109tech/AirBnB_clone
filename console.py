@@ -27,9 +27,16 @@ class HBNBCommand(cmd.Cmd):
         print("Exiting...")
         return True
 
-    def help_quit(self):
+    def do_help(self, line):
+        print("Documented commands (type help <topic>):")
+        print("========================================")
+        print("EOF  help  quit")
+        return False
+
+    def do_help_quit(self, line):
         """Help message for : quit command."""
         print("Quit command to exit the program\n")
+        return False
 
     def handle_empty_line(self, line):
         """
@@ -214,18 +221,22 @@ class HBNBCommand(cmd.Cmd):
                     }
 
         args = line.split('.')
+
         if len(args) != 2:
             print("** Incorrect command format.")
             print("Use 'User.command()' format. **")
             return
 
         class_names = line.split('(')[0]
+        # print(class_names)
         command = line.split('(')[1].split(')')[0]
+        # print(command)
         comd_commands = class_names.split('.')
         class_name_User = comd_commands[0]
         cmd_command = comd_commands[1]
+        # print(cmd_command)
 
-        if class_name_User != "User":
+        if class_name_User not in HBNBCommand.State_names:
             print("** Command not recognized **")
             return
 
