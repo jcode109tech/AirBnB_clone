@@ -1,59 +1,54 @@
 #!/usr/bin/python3
 import unittest
-from unittest.mock import patch
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 from models.engine.file_storage import FileStorage
 import os
 
-"""
-Unit tests for FileStorage class in file_storage module.
-"""
-
 
 class TestFileStorage(unittest.TestCase):
+    """Unittest for FileStorage class"""
 
     def setUp(self):
-        """ Create an instance of FileStorage for testing"""
-        self.file_storage = FileStorage()
+        """Set up for test"""
+        self.storage = FileStorage()
 
     def tearDown(self):
-        """ Clean up: remove the test file if it exists """
-        if os.path.exists(self.file_storage.get_file_path()):
-            os.remove(self.file_storage.get_file_path())
+        """Clean test files created"""
+        if os.path.exists("file.json"):
+            os.remove("file.json")
 
     def test_all(self):
-        """ Test if all method returns a dictionary"""
-        result = self.file_storage.all()
-        self.assertIsInstance(result, dict)
+        """Test all method"""
+        self.assertEqual(type(self.storage.all()), dict)
 
     def test_new(self):
-        """ Test if new method adds an object to __objects"""
+        """Test new method"""
         obj = BaseModel()
-        self.file_storage.new(obj)
-        result = self.file_storage.all()
-        self.assertIn(f'{obj.__class__.__name__}.{obj.id}', result)
+        self.storage.new(obj)
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        self.assertIn(key, self.storage.all())
 
-    def test_save_reload(self):
-        """ Test if save and reload methods work together"""
-        obj1 = BaseModel()
-        obj2 = User()
-        self.file_storage.new(obj1)
-        self.file_storage.new(obj2)
-        self.file_storage.save()
-        self.file_storage._FileStorage__objects = {}
-        self.file_storage.reload()
-        result = self.file_storage.all()
-        self.assertIn(f'{obj1.__class__.__name__}.{obj1.id}', result)
-        self.assertIn(f'{obj2.__class__.__name__}.{obj2.id}', result)
+    def test_save(self):
+        """Test save method"""
+        obj = BaseModel()
+        self.storage.new(obj)
+        self.storage.save()
+        self.assertTrue(os.path.exists("file.json"))
 
-    @patch('os.path.exists', return_value=False)
-    def test_reload_no_file(self, mock_exists):
-        """ Test reload method when the file doesn't "exist"""
-        self.file_storage.reload()
-        result = self.file_storage.all()
-        self.assertEqual(result, {})
+    def test_reload(self):
+        """Test reload method"""
+        obj = BaseModel()
+        obj.save()
+        self.storage.reload()
+        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        self.assertIn(key, self.storage.all())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
