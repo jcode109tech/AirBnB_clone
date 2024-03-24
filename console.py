@@ -62,7 +62,6 @@ class HBNBCommand(cmd.Cmd):
         instance based on the class name and id.
         Usage: show BaseModel 1234-1234-1234.
         """
-        print(line)
         args = line.split()
         if len(args) == 0:
             print("** class name missing **")
@@ -77,7 +76,6 @@ class HBNBCommand(cmd.Cmd):
         instance_id = args[1]
         instances = storage.all()
         key = class_name + "." + instance_id
-        print(key)
         if key not in instances:
             print("** no instance found **")
             return
